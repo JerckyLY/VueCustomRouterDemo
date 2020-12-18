@@ -11,5 +11,6 @@ yarn serve
 ```
 
 ### 结果
-![](img/1.png)
-![](img/2.png)
+![](img/https://github.com/JerckyLY/VueCustomRouterDemo/blob/master/images/1.png)
+
+![](img/https://github.com/JerckyLY/VueCustomRouterDemo/blob/master/images/2.png)
