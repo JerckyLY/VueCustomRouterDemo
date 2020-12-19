@@ -20,7 +20,7 @@ const  routers = [
     }
 ]
 const router  = new CustomRouter({
-    // mode:'history', //默认为 hash
+    mode:'history', //默认为 hash
     routers
 })
 

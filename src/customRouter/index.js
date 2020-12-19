@@ -1,7 +1,46 @@
-/* eslint-disable no-console */
-class HistoryRoute {
+/**
+ * hash类型
+ */
+class HashHistory {
   constructor() {
     this.current = null;
+    this.initListener()
+  }
+
+  initListener (){
+    location.hash ? '' : location.hash = '/';
+    window.addEventListener('load', () => {
+      // 页面加载的时候初始化，存储hash值到history的current上，并且去掉开头的#
+      this.current = location.hash.slice('1');
+    });
+    window.addEventListener('hashchange', () => {
+      // hash改变的时候更新history的current
+      this.current = location.hash.slice('1');
+    })
+  }
+}
+
+/**
+ * history模式
+ */
+
+class HTML5History {
+  constructor() {
+    this.current = null;
+    this.initListener()
+  }
+
+  initListener (){
+    // 如果url没有pathname，给一个默认的根目录pathname
+    location.pathname ? '' : location.pathname = '/';
+    window.addEventListener('load', () => {
+      // 页面加载的时候初始化，存储pathname值到history的current上
+      this.current = location.pathname;
+    });
+    window.addEventListener('popstate', () => {
+      // pathname改变的时候更新history的current
+      this.current = location.pathname;
+    })
   }
 }
 
@@ -11,38 +50,17 @@ class CustomRouter {
   constructor(options) {
     this.mode = options.mode || 'hash';
     this.routers = options.routers || [];
-    this.history = new HistoryRoute();
-
     // 将数组结构的routes转化成一个更好查找的对象
     this.routesMap = this.mapRoutes(this.routers);
     this.init();
   }
 
-  // 加载事件监听
+  // 初始化history
   init() {
     if (this.mode === 'hash') {
-      // 如果url没有hash，给一个默认的根目录hash
-      location.hash ? '' : location.hash = '/';
-      window.addEventListener('load', () => {
-        // 页面加载的时候初始化，存储hash值到history的current上，并且去掉开头的#
-        this.history.current = location.hash.slice('1');
-      });
-      window.addEventListener('hashchange', () => {
-        // hash改变的时候更新history的current
-        this.history.current = location.hash.slice('1');
-      })
+      this.history = new HashHistory()
     } else {
-      // else处理history模式
-      // 如果url没有pathname，给一个默认的根目录pathname
-      location.pathname ? '' : location.pathname = '/';
-      window.addEventListener('load', () => {
-        // 页面加载的时候初始化，存储pathname值到history的current上
-        this.history.current = location.pathname;
-      });
-      window.addEventListener('popstate', () => {
-        // pathname改变的时候更新history的current
-        this.history.current = location.pathname;
-      })
+      this.history = new HTML5History()
     }
   }
 
@@ -66,7 +84,6 @@ CustomRouter.install = function (vue) {
       if (this.$options && this.$options.router) {
         this._root = this;
         this._router = this.$options.router;
-        console.log(vue);
         // 监听current, defineReactive(obj, key, val)不传第三个参数，第三个参数默认是obj[key]
         // 第三个参数传了也会被监听，效果相当于，第一个参数的子级
         vue.util.defineReactive(this, 'current', this._router.history);
